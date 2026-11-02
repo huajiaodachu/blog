@@ -1,27 +1,10 @@
 {
-  "title": "我的笔记",
-  "avatar": "记",
+  "title": "花椒地",
+  "avatar": "花椒",
   "subtitle": "投资 · 职业 · 生活 · 其他",
-  "tagline": "记录思考，留存给家人",
+  "tagline": "格物、致知、诚意、正心、修身、齐家",
   "desc": "记录思考，留存给家人。",
-  "about": "一名 SRM 解决方案顾问，业余做点价值投资。这里记录想留给孩子和家人的思考。",
-  "foot_line": "记录思考，留存给家人 · 纯静态站点",
-  "links": [
-    {
-      "name": "港交所披露易",
-      "url": "https://www.hkexnews.hk"
-    },
-    {
-      "name": "巨潮资讯",
-      "url": "https://www.cninfo.com.cn"
-    },
-    {
-      "name": "上交所",
-      "url": "https://www.sse.com.cn"
-    },
-    {
-      "name": "深交所",
-      "url": "https://www.szse.cn"
-    }
-  ]
+  "about": "一个俗人",
+  "foot_line": "记录",
+  "links": []
 }
