@@ -1,6 +1,6 @@
 ---
 title: 沟通里最难的不是表达，是倾听
-category: 为人处世
+category: 其他
 tags: 沟通, 关系
 date: 2026-10-15
 excerpt: 先把对方的话听完整，再开口，往往能省掉一半误会。

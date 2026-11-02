@@ -7,23 +7,52 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(BASE, "content", "posts")
 OUT  = os.path.join(BASE, "public")
 
-SITE = {
+# 默认站点设置：当 content/site.json 不存在或字段为空时使用
+DEFAULT_SITE = {
     "title": "我的笔记",
-    "subtitle": "投资 · 生活 · 为人处世 · 工作 · 家庭",
+    "subtitle": "投资 · 职业 · 生活 · 其他",
     "desc": "记录思考，留存给家人。",
+    "avatar": "记",
+    "tagline": "记录思考，留存给家人",
+    "about": "一名 SRM 解决方案顾问，业余做点价值投资。这里记录想留给孩子和家人的思考。",
+    "foot_line": "记录思考，留存给家人 · 纯静态站点",
     "domain": "blog.kaoshang.top",
     "year": "2026",
 }
 
-CATS = [("投资", "touzi"), ("生活", "shenghuo"), ("为人处世", "weiren"), ("工作", "gongzuo"), ("家庭", "jiating")]
+
+def load_site():
+    """读取后台可编辑的站点设置 content/site.json（Decap CMS 维护）。"""
+    cfg = dict(DEFAULT_SITE)
+    p = os.path.join(BASE, "content", "site.json")
+    if os.path.exists(p):
+        try:
+            with open(p, encoding="utf-8") as f:
+                data = json.load(f)
+            for k, v in data.items():
+                if k == "links":
+                    continue
+                if isinstance(v, str) and v.strip():
+                    cfg[k] = v
+            links = []
+            if isinstance(data.get("links"), list):
+                for l in data["links"]:
+                    if isinstance(l, dict):
+                        name = str(l.get("name", "")).strip() or "链接"
+                        url = str(l.get("url", "")).strip() or "#"
+                        links.append((name, url))
+            cfg["links"] = links
+        except Exception as e:
+            print("site.json 读取失败，使用默认站点设置：", e)
+    return cfg
+
+
+SITE = load_site()
+LINKS = SITE["links"]
+
+CATS = [("投资", "touzi"), ("职业", "zhiye"), ("生活", "shenghuo"), ("其他", "qita")]
 CAT_NAME = {s: n for n, s in CATS}
 CAT_SLUG = {n: s for n, s in CATS}
-LINKS = [
-    ("港交所披露易", "https://www.hkexnews.hk"),
-    ("巨潮资讯", "https://www.cninfo.com.cn"),
-    ("上交所", "https://www.sse.com.cn"),
-    ("深交所", "https://www.szse.cn"),
-]
 
 CSS = r"""
 :root{--bg:#FFFFFF;--card:#FFFFFF;--border:#ECECEC;--text:#111111;--text-soft:#333333;--muted:#8A8A8A;--accent:#111111;--accent-light:#F3F3F3;--radius:4px;--font-title:Georgia,"Songti SC","SimSun",serif;--font-body:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;}
@@ -222,15 +251,15 @@ def header(root, active_slug=""):
         items += '<a href="%sc/%s/index.html"%s>%s</a>' % (root, slug, cls, name)
     return (
         '<header class="top"><div class="top-inner">'
-        '<a class="brand" href="%sindex.html"><div class="avatar">记</div>'
+        '<a class="brand" href="%sindex.html"><div class="avatar">%s</div>'
         '<div><div class="bname">%s</div><p>%s</p></div></a>'
         '<nav class="cats">%s</nav></div></header>'
-        % (root, SITE["title"], SITE["subtitle"], items)
+        % (root, html.escape(SITE.get("avatar", "记")), SITE["title"], SITE["subtitle"], items)
     )
 
 
 def aside(root):
-    about = '<div class="card-side"><h4>关于我</h4><p>%s</p></div>' % "一名 SRM 解决方案顾问，业余做点价值投资。这里记录想留给孩子和家人的思考。"
+    about = '<div class="card-side"><h4>关于我</h4><p>%s</p></div>' % html.escape(SITE["about"])
     ad = '<div class="adbox" style="padding:34px 16px;"><b>广告位（预留）</b>300 × 250</div>'
     links = '<div class="card-side"><h4>友情链接</h4>' + "".join(
         '<a href="%s" target="_blank" rel="noopener">%s</a>' % (u, t) for t, u in LINKS
@@ -241,8 +270,8 @@ def aside(root):
 def footer():
     return (
         '<footer class="foot"><div class="foot-inner">'
-        '<p>© %s %s · %s</p><p class="foot-sub">记录思考，留存给家人 · 纯静态站点</p>'
-        "</div></footer>" % (SITE["year"], SITE["title"], SITE["domain"])
+        '<p>© %s %s · %s</p><p class="foot-sub">%s</p>'
+        "</div></footer>" % (SITE["year"], SITE["title"], SITE["domain"], html.escape(SITE["foot_line"]))
     )
 
 
@@ -304,17 +333,13 @@ def build():
                 shutil.copy2(os.path.join(root, fn), dst)
 
     chips = "".join('<a class="chip" href="c/%s/index.html">%s</a>' % (slug, name) for name, slug in CATS)
-    hero = (
-        '<div class="hero"><h2>记录思考，留存给家人</h2><p>%s</p>'
-        '<div class="search"><input id="search" placeholder="搜索文章标题、标签…"></div></div>' % SITE["desc"]
-    )
     home_main = (
-        '<div class="hero"><h1>记录思考，留存给家人</h1><p>%s</p>'
+        '<div class="hero"><h1>%s</h1><p>%s</p>'
         '<div class="search"><input id="search" placeholder="搜索文章标题、标签…"></div></div>'
         '<div class="chips">%s</div>'
         '<div class="adbox"><b>广告位（预留 · 首页横幅）</b>728 × 90</div>'
         '<div class="sec-title">最新文章</div><div id="home-list">%s</div>'
-        % (SITE["desc"], chips, "".join(post_card(p, "") for p in posts))
+        % (SITE["tagline"], SITE["desc"], chips, "".join(post_card(p, "") for p in posts))
     )
     home = '<div class="layout"><div class="main">%s</div>%s</div>' % (home_main, aside(""))
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:

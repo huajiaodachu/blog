@@ -1,6 +1,6 @@
 ---
 title: 陪孩子搭乐高的下午
-category: 家庭
+category: 生活
 tags: 家庭, 亲子
 date: 2026-10-08
 excerpt: 他拼错一步就重来，比我炒股止损还果断。

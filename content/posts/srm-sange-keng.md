@@ -1,6 +1,6 @@
 ---
 title: SRM 实施项目的三个坑
-category: 工作
+category: 职业
 tags: SRM, 方法论
 date: 2026-10-12
 excerpt: 需求不清、主数据脏、上线即躺平——三个坑都踩过才长记性。

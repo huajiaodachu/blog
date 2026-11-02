@@ -1,6 +1,6 @@
 # Decap CMS 配置（网页后台）
-# 只需改一处带【】的占位符：repo（你的 GitHub 用户名/仓库名）。
-# client_id / client_secret 不放这里，存在 Cloudflare Pages 的环境变量里（更安全）。
+# backend：GitHub 仓库，登录走同域 OAuth 代理（functions/auth.js + callback.js）
+# 站点设置存在 content/site.json（「站点设置」栏目），文章存在 content/posts/*.md
 
 backend:
   name: github
@@ -16,7 +16,30 @@ media_folder: "static/uploads"  # 后台上传的图片存这里
 public_folder: "/static/uploads"
 
 collections:
-  - name: "posts"
+  - name: settings
+    label: 站点设置
+    label_singular: 设置
+    files:
+      - name: site
+        label: 基本设置
+        file: content/site.json
+        format: json
+        fields:
+          - { name: title, label: "站点名称", widget: string }
+          - { name: avatar, label: "头像字（一个字）", widget: string }
+          - { name: subtitle, label: "副标题（站名下面一行）", widget: string }
+          - { name: tagline, label: "首页大标语", widget: string }
+          - { name: desc, label: "站点描述（搜索引擎用）", widget: string }
+          - { name: about, label: "关于我（侧栏）", widget: text }
+          - { name: foot_line, label: "页脚文案", widget: string }
+          - name: links
+            label: "友情链接（可增删）"
+            widget: list
+            fields:
+              - { name: name, label: "名称", widget: string }
+              - { name: url, label: "网址", widget: string }
+
+  - name: posts
     label: "文章"
     label_singular: "一篇文章"
     folder: "content/posts"
@@ -25,7 +48,7 @@ collections:
     fields:
       - { name: title, label: "标题", widget: "string" }
       - { name: slug, label: "网址标识(英文/拼音，如 hai-you)", widget: "string", required: true, hint: "用于生成链接，避免中文链接乱码；例如 hai-you-hongchou" }
-      - { name: category, label: "分类", widget: "select", options: [投资, 生活, 为人处世, 工作, 家庭] }
+      - { name: category, label: "分类", widget: "select", options: [投资, 职业, 生活, 其他] }
       - { name: tags, label: "标签(逗号分隔)", widget: "string", required: false, hint: "多个标签用逗号隔开，例如：中国海油, 港股, 安全边际" }
       - { name: date, label: "日期", widget: "date", required: false, format: "YYYY-MM-DD" }
       - { name: excerpt, label: "摘要(留空自动截取)", widget: "string", required: false }
